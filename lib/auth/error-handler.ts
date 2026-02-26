@@ -13,14 +13,14 @@ export class ErrorHandler implements IErrorHandler {
    * Handle and transform any error into standardized AuthError format
    */
   handleAuthError(error: unknown): AuthError {
-    // Network/connection errors
-    if (this.isNetworkError(error)) {
-      return this.createAuthError('network', 'Проблемы с подключением к серверу')
+    // Timeout errors (check first as they're most specific)
+    if (this.isTimeoutError(error)) {
+      return this.createAuthError('network', 'Превышено время ожидания ответа от сервера. Проверьте подключение к интернету и попробуйте снова.')
     }
 
-    // Timeout errors
-    if (this.isTimeoutError(error)) {
-      return this.createAuthError('network', 'Превышено время ожидания ответа сервера')
+    // Network/connection errors (no internet, DNS failure, etc.)
+    if (this.isNetworkError(error)) {
+      return this.createAuthError('network', 'Не удается подключиться к серверу. Проверьте подключение к интернету и попробуйте снова.')
     }
 
     // HTTP status errors
@@ -48,7 +48,7 @@ export class ErrorHandler implements IErrorHandler {
   getErrorMessage(error: AuthError): string {
     switch (error.type) {
       case 'network':
-        return error.message || 'Проблемы с подключением к серверу'
+        return error.message || 'Проблемы с подключением к серверу. Проверьте подключение к интернету.'
       
       case 'validation':
         return error.field 
@@ -56,10 +56,12 @@ export class ErrorHandler implements IErrorHandler {
           : error.message || 'Проверьте правильность введенных данных'
       
       case 'unauthorized':
-        return error.message || 'Неверное имя пользователя или пароль'
+        // Security: Generic message that doesn't reveal which credential was incorrect
+        return 'Неверные учетные данные. Проверьте введенную информацию и попробуйте снова.'
       
       case 'server':
-        return error.message || 'Временные проблемы на сервере, попробуйте позже'
+        // Include retry guidance for server errors
+        return error.message || 'Что-то пошло не так. Пожалуйста, попробуйте снова через несколько минут.'
       
       case 'unknown':
       default:
@@ -109,14 +111,23 @@ export class ErrorHandler implements IErrorHandler {
       const message = error.message.toLowerCase()
       return message.includes('fetch') || 
              message.includes('network') || 
-             message.includes('connection')
+             message.includes('connection') ||
+             message.includes('failed to fetch')
     }
     
     if (error instanceof Error) {
       const message = error.message.toLowerCase()
       return message.includes('network request failed') ||
              message.includes('connection refused') ||
-             message.includes('dns')
+             message.includes('dns') ||
+             message.includes('enotfound') ||
+             message.includes('econnrefused') ||
+             message.includes('offline')
+    }
+    
+    // Check if browser is offline
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      return true
     }
     
     return false
@@ -127,8 +138,11 @@ export class ErrorHandler implements IErrorHandler {
    */
   private isTimeoutError(error: unknown): boolean {
     if (error instanceof Error) {
+      const message = error.message.toLowerCase()
       return error.name === 'AbortError' || 
-             error.message.toLowerCase().includes('timeout')
+             message.includes('timeout') ||
+             message.includes('timed out') ||
+             message.includes('time out')
     }
     return false
   }
@@ -155,32 +169,34 @@ export class ErrorHandler implements IErrorHandler {
         return this.createAuthError('validation', 'Неверный формат запроса')
       
       case 401:
-        return this.createAuthError('unauthorized', 'Неверное имя пользователя или пароль')
+        // Security: Generic message that doesn't reveal which credential was incorrect
+        return this.createAuthError('unauthorized', 'Неверные учетные данные. Проверьте введенную информацию и попробуйте снова.')
       
       case 403:
-        return this.createAuthError('unauthorized', 'Доступ запрещен')
+        // Security: Generic message for forbidden access
+        return this.createAuthError('unauthorized', 'Неверные учетные данные. Проверьте введенную информацию и попробуйте снова.')
       
       case 422:
         return this.createAuthError('validation', 'Ошибка валидации данных')
       
       case 429:
-        return this.createAuthError('server', 'Слишком много попыток, попробуйте позже')
+        return this.createAuthError('server', 'Слишком много попыток. Пожалуйста, попробуйте снова через несколько минут.')
       
       case 500:
-        return this.createAuthError('server', 'Внутренняя ошибка сервера')
+        return this.createAuthError('server', 'Внутренняя ошибка сервера. Пожалуйста, попробуйте снова через несколько минут.')
       
       case 502:
-        return this.createAuthError('server', 'Сервер временно недоступен')
+        return this.createAuthError('server', 'Сервер временно недоступен. Пожалуйста, попробуйте снова через несколько минут.')
       
       case 503:
-        return this.createAuthError('server', 'Сервис временно недоступен')
+        return this.createAuthError('server', 'Сервис временно недоступен. Пожалуйста, попробуйте снова через несколько минут.')
       
       case 504:
-        return this.createAuthError('server', 'Превышено время ожидания сервера')
+        return this.createAuthError('server', 'Превышено время ожидания сервера. Пожалуйста, попробуйте снова через несколько минут.')
       
       default:
         if (status >= 500) {
-          return this.createAuthError('server', 'Ошибка сервера, попробуйте позже')
+          return this.createAuthError('server', 'Ошибка сервера. Пожалуйста, попробуйте снова через несколько минут.')
         } else if (status >= 400) {
           return this.createAuthError('validation', 'Ошибка в запросе')
         } else {

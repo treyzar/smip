@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowRight } from "lucide-react"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { ArrowRight, AlertCircle } from "lucide-react"
 import { useAuth, getReturnUrl } from "@/lib/auth"
 import { VALIDATION_CONSTRAINTS } from "@/lib/auth/config"
 
@@ -14,6 +15,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [isRedirecting, setIsRedirecting] = useState(false)
+  const prevUsernameRef = useRef(username)
+  const prevPasswordRef = useRef(password)
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -35,13 +38,19 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router, searchParams, isRedirecting])
 
-  // Clear errors when user starts typing
+  // Clear errors when user starts typing (only if values actually changed)
   useEffect(() => {
-    if (error) {
+    const usernameChanged = prevUsernameRef.current !== username
+    const passwordChanged = prevPasswordRef.current !== password
+    
+    if ((usernameChanged || passwordChanged) && error) {
       clearError()
+      setFieldErrors({})
     }
-    setFieldErrors({})
-  }, [username, password, clearError, error])
+    
+    prevUsernameRef.current = username
+    prevPasswordRef.current = password
+  }, [username, password, error, clearError])
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
@@ -153,9 +162,11 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-            {error}
-          </div>
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Ошибка аутентификации</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
 
         <Button

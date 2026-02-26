@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { authService } from './auth-service'
 import { tokenManager } from './token-manager'
 import type { 
@@ -87,6 +88,7 @@ interface AuthProviderProps {
 // Auth Provider Component
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialState)
+  const router = useRouter()
 
   // Initialize authentication state on app load
   const initializeAuth = useCallback(async () => {
@@ -149,7 +151,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.log('Auth Context: User state updated, isAuthenticated should be true')
     } catch (error) {
       console.error('Auth Context: Login failed:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Login failed'
+      // Extract error message from AuthError object
+      const errorMessage = (error as AuthError)?.message || 'Login failed'
       dispatch({ type: 'SET_ERROR', payload: errorMessage })
       throw error // Re-throw so components can handle it
     }
@@ -160,14 +163,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
       
+      // Clear tokens via authService (handles API call and token cleanup)
       await authService.logout()
+      
+      // Reset authentication state
       dispatch({ type: 'RESET_STATE' })
+      
+      // Navigate to home page
+      router.push('/')
     } catch (error) {
-      // Even if logout API call fails, we should clear local state
+      // Even if logout API call fails, we should clear local state and navigate
       console.error('Logout error:', error)
       dispatch({ type: 'RESET_STATE' })
+      router.push('/')
     }
-  }, [])
+  }, [router])
 
   // Refresh authentication
   const refreshAuth = useCallback(async () => {
@@ -184,7 +194,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       tokenManager.clearTokens()
       dispatch({ type: 'SET_USER', payload: null })
       
-      const errorMessage = error instanceof Error ? error.message : 'Token refresh failed'
+      // Extract error message from AuthError object
+      const errorMessage = (error as AuthError)?.message || 'Token refresh failed'
       dispatch({ type: 'SET_ERROR', payload: errorMessage })
       throw error
     }

@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Save, RefreshCw, CheckCircle2, XCircle, HelpCircle, ChevronRight } from "lucide-react"
+import { Save, RefreshCw, CheckCircle2, XCircle, HelpCircle, ChevronRight, Link2 } from "lucide-react"
 
 const connections = [
   {
@@ -17,12 +17,7 @@ const connections = [
     name: "Yandex DataLens",
     description: "Визуализация аналитики",
     connected: false,
-  },
-  {
-    name: "Telegram Bot API",
-    description: "Автоматические уведомления",
-    connected: false,
-  },
+  }
 ]
 
 const faqItems = [
@@ -43,10 +38,73 @@ const faqItems = [
 export default function SettingsPage() {
   const [email, setEmail] = useState("user@example.com")
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const [sheetUrl, setSheetUrl] = useState("")
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    const stored = localStorage.getItem("smip_google_sheet_url")
+    if (stored) setSheetUrl(stored)
+  }, [])
+
+  const handleSaveSheetUrl = () => {
+    localStorage.setItem("smip_google_sheet_url", sheetUrl)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+    // Dispatch a storage event so other tabs/components pick it up
+    window.dispatchEvent(new Event("storage"))
+  }
 
   return (
     <div className="max-w-3xl mx-auto flex flex-col gap-8">
-      
+
+      {/* Google Sheets URL */}
+      <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <Link2 className="w-5 h-5 text-primary" />
+          <h2 className="text-base font-bold uppercase tracking-[0.1em] text-foreground">
+            Google Таблица
+          </h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+          Вставьте URL вашей Google Таблицы. Она будет отображаться на странице парсинга. Убедитесь, что таблица доступна по ссылке (Файл &rarr; Поделиться &rarr; Все, у кого есть ссылка).
+        </p>
+        <div className="flex flex-col gap-3">
+          <Label htmlFor="sheet-url" className="text-xs uppercase tracking-[0.1em] text-muted-foreground">
+            URL таблицы
+          </Label>
+          <div className="flex gap-2">
+            <Input
+              id="sheet-url"
+              value={sheetUrl}
+              onChange={(e) => setSheetUrl(e.target.value)}
+              placeholder="https://docs.google.com/spreadsheets/d/..."
+              className="flex-1 bg-secondary/30 border-border text-foreground placeholder:text-muted-foreground"
+            />
+            <Button
+              onClick={handleSaveSheetUrl}
+              size="sm"
+              className="rounded-lg text-xs tracking-[0.05em] uppercase gap-2 min-w-[120px]"
+            >
+              {saved ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Сохранено
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5" />
+                  Сохранить
+                </>
+              )}
+            </Button>
+          </div>
+          {sheetUrl && (
+            <p className="text-xs text-muted-foreground">
+              Таблица будет встроена на странице &laquo;Парсинг&raquo;
+            </p>
+          )}
+        </div>
+      </section>
 
       <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
         <h2 className="text-base font-bold uppercase tracking-[0.1em] text-foreground mb-6">
