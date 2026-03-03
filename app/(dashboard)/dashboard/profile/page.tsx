@@ -8,20 +8,20 @@ import {
   Save,
   Camera,
   User,
-  Mail,
   Lock,
   Eye,
   EyeOff,
   CheckCircle2,
   Shield,
   Building2,
+  Link2,
+  Loader2,
 } from "lucide-react"
 import { useAuth } from "@/lib/auth"
 
 export default function ProfilePage() {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const [companyName, setCompanyName] = useState("")
-  const [email, setEmail] = useState("")
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -31,13 +31,24 @@ export default function ProfilePage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [savedProfile, setSavedProfile] = useState(false)
   const [savedPassword, setSavedPassword] = useState(false)
+  const [sheetUrl, setSheetUrl] = useState("")
+  const [isSavingProfile, setIsSavingProfile] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Load user data when component mounts or user changes
   useEffect(() => {
     if (user) {
-      setEmail(user.username || "")
-      setCompanyName(user.companyName || "")
+      setCompanyName(user.username || "")
+
+      if (user.google_sheet_url) {
+        setSheetUrl(user.google_sheet_url)
+        // Also sync to local storage for backward compatibility
+        localStorage.setItem("smip_google_sheet_url", user.google_sheet_url)
+        window.dispatchEvent(new Event("storage"))
+      } else {
+        const stored = localStorage.getItem("smip_google_sheet_url")
+        if (stored) setSheetUrl(stored)
+      }
     }
   }, [user])
 
@@ -52,10 +63,22 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSavedProfile(true)
-    setTimeout(() => setSavedProfile(false), 2000)
+    setIsSavingProfile(true)
+    try {
+      await updateUser({ google_sheet_url: sheetUrl })
+
+      localStorage.setItem("smip_google_sheet_url", sheetUrl)
+      window.dispatchEvent(new Event("storage"))
+
+      setSavedProfile(true)
+      setTimeout(() => setSavedProfile(false), 2000)
+    } catch (error) {
+      console.error("Failed to save profile", error)
+    } finally {
+      setIsSavingProfile(false)
+    }
   }
 
   const handleSavePassword = (e: React.FormEvent) => {
@@ -81,102 +104,129 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-3xl mx-auto flex flex-col gap-8">
-      {/* Avatar & Personal Info */}
-      <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
-        <h2 className="text-base font-bold uppercase tracking-[0.1em] text-foreground mb-8">
-          Личная информация
-        </h2>
+      <form onSubmit={handleSaveProfile} className="flex flex-col gap-8">
+        {/* Avatar & Personal Info */}
+        <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
+          <h2 className="text-base font-bold uppercase tracking-[0.1em] text-foreground mb-8">
+            Личная информация
+          </h2>
 
-        <form onSubmit={handleSaveProfile} className="flex flex-col gap-8">
-          {/* Avatar */}
-          <div className="flex items-center gap-6">
-            <div className="relative group">
-              <div className="w-20 h-20 rounded-2xl bg-secondary border-2 border-border overflow-hidden flex items-center justify-center transition-all duration-200 group-hover:border-primary/40">
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt="Аватар"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-8 h-8 text-muted-foreground" />
-                )}
+          <div className="flex flex-col gap-8">
+            {/* Avatar */}
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="w-20 h-20 rounded-2xl bg-secondary border-2 border-border overflow-hidden flex items-center justify-center transition-all duration-200 group-hover:border-primary/40">
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Аватар"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-8 h-8 text-muted-foreground" />
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute -bottom-1 -right-1 w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:bg-primary/90 transition-colors"
+                  aria-label="Загрузить аватар"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                  aria-label="Выбрать файл аватара"
+                />
               </div>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute -bottom-1 -right-1 w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:bg-primary/90 transition-colors"
-                aria-label="Загрузить аватар"
-              >
-                <Camera className="w-3.5 h-3.5" />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                className="hidden"
-                aria-label="Выбрать файл аватара"
+              <div>
+                <p className="text-sm font-medium text-foreground">Фото профиля</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  JPG, PNG или GIF. Максимум 2MB.
+                </p>
+              </div>
+            </div>
+
+            {/* Company Name */}
+            <div className="flex flex-col gap-2.5">
+              <Label className="text-xs tracking-[0.1em] uppercase text-muted-foreground flex items-center gap-2">
+                <Building2 className="w-3.5 h-3.5" />
+                Название компании
+              </Label>
+              <Input
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Введите название компании"
+                className="h-11 rounded-xl bg-secondary border-border text-foreground placeholder:text-muted-foreground/50"
               />
             </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">Фото профиля</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                JPG, PNG или GIF. Максимум 2MB.
+
+          </div>
+        </section>
+
+        {/* Google Sheets URL */}
+        <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Link2 className="w-5 h-5 text-primary" />
+            <h2 className="text-base font-bold uppercase tracking-[0.1em] text-foreground">
+              Google Таблица
+            </h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            Вставьте URL вашей Google Таблицы. Она будет отображаться на странице парсинга. Убедитесь, что таблица доступна по ссылке (Файл &rarr; Поделиться &rarr; Все, у кого есть ссылка).
+          </p>
+          <div className="flex flex-col gap-3">
+            <Label htmlFor="sheet-url" className="text-xs uppercase tracking-[0.1em] text-muted-foreground">
+              URL таблицы
+            </Label>
+            <Input
+              id="sheet-url"
+              value={sheetUrl}
+              onChange={(e) => setSheetUrl(e.target.value)}
+              placeholder="https://docs.google.com/spreadsheets/d/..."
+              className="w-full bg-secondary/30 border-border text-foreground placeholder:text-muted-foreground"
+            />
+            {sheetUrl && (
+              <p className="text-xs text-muted-foreground">
+                Таблица будет встроена на странице &laquo;Парсинг&raquo;
               </p>
-            </div>
+            )}
           </div>
+        </section>
 
-          {/* Company Name */}
-          <div className="flex flex-col gap-2.5">
-            <Label className="text-xs tracking-[0.1em] uppercase text-muted-foreground flex items-center gap-2">
-              <Building2 className="w-3.5 h-3.5" />
-              Название компании
-            </Label>
-            <Input
-              type="text"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Введите название компании"
-              className="h-11 rounded-xl bg-secondary border-border text-foreground placeholder:text-muted-foreground/50"
-            />
-          </div>
-
-          {/* Email */}
-          <div className="flex flex-col gap-2.5">
-            <Label className="text-xs tracking-[0.1em] uppercase text-muted-foreground flex items-center gap-2">
-              <Mail className="w-3.5 h-3.5" />
-              Email
-            </Label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="h-11 rounded-xl bg-secondary border-border text-foreground"
-            />
-          </div>
-
-          {/* Save button */}
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2">
-              {savedProfile && (
-                <span className="flex items-center gap-1.5 text-xs text-primary animate-fade-in-up">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Сохранено
-                </span>
-              )}
-            </div>
-            <Button
-              type="submit"
-              size="sm"
-              className="rounded-lg text-xs tracking-[0.05em] uppercase gap-2"
-            >
-              <Save className="w-3.5 h-3.5" />
-              Сохранить
-            </Button>
-          </div>
-        </form>
-      </section>
+        {/* Save button */}
+        <div className="flex items-center justify-end gap-4 mt-2">
+          {savedProfile && (
+            <span className="flex items-center gap-1.5 text-xs text-primary animate-fade-in-up">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Данные сохранены
+            </span>
+          )}
+          <Button
+            type="submit"
+            size="sm"
+            className="rounded-lg text-xs tracking-[0.05em] uppercase gap-2 min-w-[180px]"
+            disabled={isSavingProfile}
+          >
+            {isSavingProfile ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                Сохранение...
+              </>
+            ) : (
+              <>
+                <Save className="w-3.5 h-3.5" />
+                Сохранить изменения
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
 
       {/* Change Password */}
       <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
@@ -264,11 +314,10 @@ export default function ProfilePage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Повторите новый пароль"
-                className={`h-11 rounded-xl bg-secondary border-border text-foreground placeholder:text-muted-foreground/50 pr-11 ${
-                  confirmPassword && confirmPassword !== newPassword
-                    ? "border-destructive/50 focus-visible:ring-destructive/50"
-                    : ""
-                }`}
+                className={`h-11 rounded-xl bg-secondary border-border text-foreground placeholder:text-muted-foreground/50 pr-11 ${confirmPassword && confirmPassword !== newPassword
+                  ? "border-destructive/50 focus-visible:ring-destructive/50"
+                  : ""
+                  }`}
               />
               <button
                 type="button"

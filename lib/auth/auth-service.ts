@@ -4,13 +4,15 @@ import { authHttpClient } from './http-client'
 import { tokenManager } from './token-manager'
 import { errorHandler } from './error-handler'
 import { API_ENDPOINTS, VALIDATION_CONSTRAINTS } from './config'
-import type { 
-  AuthService as IAuthService, 
-  LoginCredentials, 
-  AuthResponse, 
+import type {
+  AuthService as IAuthService,
+  LoginCredentials,
+  AuthResponse,
   AuthError,
   ValidationError,
-  ApiError 
+  ApiError,
+  User,
+  UpdateUserRequest
 } from './types'
 
 export class AuthService implements IAuthService {
@@ -42,7 +44,7 @@ export class AuthService implements IAuthService {
    */
   async refreshToken(): Promise<AuthResponse> {
     const refreshToken = tokenManager.getRefreshToken()
-    
+
     if (!refreshToken) {
       throw errorHandler.handleAuthError(new Error('No refresh token available'))
     }
@@ -70,7 +72,7 @@ export class AuthService implements IAuthService {
    */
   async logout(): Promise<void> {
     const accessToken = tokenManager.getAccessToken()
-    
+
     try {
       // Attempt to notify server about logout
       if (accessToken) {
@@ -84,6 +86,23 @@ export class AuthService implements IAuthService {
       // Always clear tokens locally
       tokenManager.clearTokens()
       authHttpClient.clearAuthToken()
+    }
+  }
+
+  /**
+   * Update user details
+   */
+  async updateUser(data: UpdateUserRequest): Promise<User> {
+    try {
+      const response = await authHttpClient.post<User>(
+        API_ENDPOINTS.USER_UPDATE,
+        data
+      )
+
+      // We return the updated user object
+      return response.data
+    } catch (error) {
+      throw errorHandler.handleAuthError(error)
     }
   }
 

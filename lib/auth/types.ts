@@ -2,7 +2,14 @@
 
 export interface User {
   username: string
-  // Additional fields will be added as needed
+  email?: string | null
+  google_sheet_url?: string | null
+  companyName?: string
+}
+
+export interface UpdateUserRequest {
+  email?: string | null
+  google_sheet_url?: string | null
 }
 
 export interface LoginCredentials {
@@ -32,6 +39,7 @@ export interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>
   logout: () => Promise<void>
   refreshAuth: () => Promise<void>
+  updateUser: (data: UpdateUserRequest) => Promise<void>
   clearError: () => void
 }
 
@@ -63,6 +71,7 @@ export interface AuthService {
   login(credentials: LoginCredentials): Promise<AuthResponse>
   refreshToken(): Promise<AuthResponse>
   logout(): Promise<void>
+  updateUser(data: UpdateUserRequest): Promise<User>
 }
 
 export interface TokenManager {

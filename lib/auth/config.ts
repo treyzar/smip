@@ -4,6 +4,7 @@ export interface ApiConfig {
   baseUrl: string
   endpoints: {
     auth: string
+    user: string
   }
   timeout: number
   retryAttempts: number
@@ -12,7 +13,8 @@ export interface ApiConfig {
 export const API_CONFIG: ApiConfig = {
   baseUrl: 'https://smip.site/api-v1',
   endpoints: {
-    auth: '/auth'
+    auth: '/auth',
+    user: '/user'
   },
   timeout: 10000, // 10 seconds
   retryAttempts: 3
@@ -22,7 +24,8 @@ export const API_CONFIG: ApiConfig = {
 export const API_ENDPOINTS = {
   LOGIN: `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth}`,
   REFRESH: `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth}/refresh`,
-  LOGOUT: `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth}/logout`
+  LOGOUT: `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth}/logout`,
+  USER_UPDATE: `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.user}/update`
 } as const
 
 // HTTP headers

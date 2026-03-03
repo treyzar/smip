@@ -4,12 +4,13 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback } 
 import { useRouter } from 'next/navigation'
 import { authService } from './auth-service'
 import { tokenManager } from './token-manager'
-import type { 
-  AuthState, 
-  AuthContextType, 
-  LoginCredentials, 
+import type {
+  AuthState,
+  AuthContextType,
+  LoginCredentials,
   User,
-  AuthError 
+  AuthError,
+  UpdateUserRequest
 } from './types'
 
 // Auth Context
@@ -94,16 +95,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const initializeAuth = useCallback(async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      
+
       const accessToken = tokenManager.getAccessToken()
       const refreshToken = tokenManager.getRefreshToken()
-      
+
       if (!accessToken || !refreshToken) {
         // No tokens found, user is not authenticated
         dispatch({ type: 'SET_USER', payload: null })
         return
       }
-      
+
       // Check if access token is expired
       if (tokenManager.isTokenExpired(accessToken)) {
         // Try to refresh the token
@@ -138,15 +139,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
       dispatch({ type: 'CLEAR_ERROR' })
-      
+
       console.log('Auth Context: Starting login process...')
       const response = await authService.login(credentials)
       console.log('Auth Context: Login API call successful')
-      
+
       // Extract user info from access token
       const user = extractUserFromToken(response.access_token)
       console.log('Auth Context: User extracted from token:', user)
-      
+
       dispatch({ type: 'SET_USER', payload: user })
       console.log('Auth Context: User state updated, isAuthenticated should be true')
     } catch (error) {
@@ -162,13 +163,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = useCallback(async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      
+
       // Clear tokens via authService (handles API call and token cleanup)
       await authService.logout()
-      
+
       // Reset authentication state
       dispatch({ type: 'RESET_STATE' })
-      
+
       // Navigate to home page
       router.push('/')
     } catch (error) {
@@ -183,9 +184,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const refreshAuth = useCallback(async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      
+
       const response = await authService.refreshToken()
-      
+
       // Extract user info from new access token
       const user = extractUserFromToken(response.access_token)
       dispatch({ type: 'SET_USER', payload: user })
@@ -193,11 +194,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Refresh failed, clear tokens and set as unauthenticated
       tokenManager.clearTokens()
       dispatch({ type: 'SET_USER', payload: null })
-      
+
       // Extract error message from AuthError object
       const errorMessage = (error as AuthError)?.message || 'Token refresh failed'
       dispatch({ type: 'SET_ERROR', payload: errorMessage })
       throw error
+    }
+  }, [])
+
+  // Update user function
+  const updateUser = useCallback(async (data: UpdateUserRequest) => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true })
+      dispatch({ type: 'CLEAR_ERROR' })
+
+      const updatedUser = await authService.updateUser(data)
+
+      dispatch({ type: 'SET_USER', payload: updatedUser })
+    } catch (error) {
+      const errorMessage = (error as AuthError)?.message || 'Update user failed'
+      dispatch({ type: 'SET_ERROR', payload: errorMessage })
+      throw error // Re-throw so components can handle it
     }
   }, [])
 
@@ -217,6 +234,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     refreshAuth,
+    updateUser,
     clearError
   }
 
@@ -230,11 +248,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 // Custom hook to use auth context
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext)
-  
+
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider')
   }
-  
+
   return context
 }
 
