@@ -3,157 +3,91 @@
 import { useState } from "react"
 import Link from "next/link"
 import {
-  Table2,
-  BarChart3,
-  Settings,
-  User,
   ArrowRight,
   CheckCircle2,
   ChevronDown,
-  Zap,
-  Brain,
+  Copy,
+  ExternalLink,
+  FileSpreadsheet,
+  HelpCircle,
   Link2,
   Rocket,
-  Shield,
-  HelpCircle,
-  ExternalLink,
+  Settings,
+  Table2,
+  Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+
+/* ─── Template URL (replace with real Google Sheets /copy link) ─── */
+const TEMPLATE_URL =
+  "https://docs.google.com/spreadsheets/d/ВАША_ССЫЛКА_НА_ШАБЛОН/copy"
 
 /* ─── Quick-start steps ─── */
 const quickStartSteps = [
   {
     number: "01",
-    title: "Зарегистрируйтесь",
+    title: "Скопируйте шаблон таблицы",
     description:
-      "Создайте аккаунт на платформе SMIP, используя email и пароль. После регистрации вы сразу попадёте в личный кабинет.",
-    link: { label: "Регистрация", href: "/register" },
+      "Нажмите кнопку ниже -- Google автоматически создаст копию готового шаблона в вашем аккаунте. Таблица уже содержит нужные столбцы и формат данных.",
+    link: {
+      label: "Скопировать шаблон",
+      href: TEMPLATE_URL,
+      external: true,
+    },
   },
   {
     number: "02",
-    title: "Подключите Google Sheets",
+    title: "Вставьте URL таблицы в Настройки",
     description:
-      "Перейдите в раздел Настройки и добавьте URL вашей Google-таблицы. Именно в ней будут храниться и обновляться данные парсинга блогеров.",
-    link: { label: "Настройки", href: "/dashboard/settings" },
+      "Откройте вашу копию таблицы, скопируйте URL из адресной строки браузера и вставьте его в разделе Настройки в поле Google Sheets API.",
+    link: {
+      label: "Перейти в Настройки",
+      href: "/dashboard/settings",
+      external: false,
+    },
   },
   {
     number: "03",
     title: "Запустите парсинг",
     description:
-      "Откройте раздел Парсинг -- встроенная таблица покажет данные в реальном времени. Используйте полноэкранный режим для удобной работы.",
-    link: { label: "Парсинг", href: "/dashboard/parsing" },
-  },
-  {
-    number: "04",
-    title: "Подключите DataLens",
-    description:
-      "Для визуализации данных настройте Yandex DataLens: создайте дашборд, получите ссылку для встраивания и добавьте её в Настройки.",
-    link: { label: "Дашборд", href: "/dashboard/analytics" },
+      "Перейдите в раздел Парсинг -- таблица подгрузится автоматически. Вы можете работать с данными прямо в интерфейсе или открыть таблицу в Google Sheets.",
+    link: {
+      label: "Открыть Парсинг",
+      href: "/dashboard/parsing",
+      external: false,
+    },
   },
 ]
 
-/* ─── Sections of the dashboard ─── */
-const sections = [
-  {
-    icon: Table2,
-    title: "Парсинг",
-    href: "/dashboard/parsing",
-    description:
-      "Основной рабочий инструмент. Здесь отображается встроенная Google-таблица с данными блогеров. Вы можете:",
-    features: [
-      "Просматривать и редактировать данные в реальном времени",
-      "Переключаться в полноэкранный режим для удобства",
-      "Открывать таблицу напрямую в Google Sheets",
-    ],
-  },
-  {
-    icon: BarChart3,
-    title: "Дашборд (Аналитика)",
-    href: "/dashboard/analytics",
-    description:
-      "Визуализация данных через Yandex DataLens. После подключения вы получите:",
-    features: [
-      "Интерактивные графики и диаграммы",
-      "Метрики вовлечённости, охвата и роста аудитории",
-      "Автоматическую синхронизацию с данными парсинга",
-    ],
-  },
-  {
-    icon: User,
-    title: "Профиль",
-    href: "/dashboard/profile",
-    description:
-      "Управление вашей учётной записью. В профиле доступно:",
-    features: [
-      "Изменение имени, фамилии и аватара",
-      "Обновление email-адреса",
-      "Смена пароля с индикатором надёжности",
-    ],
-  },
-  {
-    icon: Settings,
-    title: "Настройки",
-    href: "/dashboard/settings",
-    description:
-      "Центр управления подключениями и конфигурацией сервиса:",
-    features: [
-      "Подключение Google Sheets API для парсинга",
-      "Подключение Yandex DataLens для аналитики",
-      "Настройка Telegram Bot API для уведомлений",
-    ],
-  },
-]
-
-/* ─── Key features ─── */
-const keyFeatures = [
-  {
-    icon: Zap,
-    title: "Автоматический парсинг",
-    description:
-      "Сбор данных блогеров из социальных сетей с автоматическим обновлением базы в Google-таблице.",
-  },
-  {
-    icon: BarChart3,
-    title: "Детальная аналитика",
-    description:
-      "Глубокие инсайты по вовлечённости, аудитории и росту каждого блогера через DataLens.",
-  },
-  {
-    icon: Brain,
-    title: "AI-генерация контента",
-    description:
-      "Создание уникальных текстов, хештегов и стратегий публикаций на основе анализа трендов.",
-  },
-  {
-    icon: Link2,
-    title: "Интеграции",
-    description:
-      "Бесшовная связь с Google Sheets, Yandex DataLens и Telegram для автоматизации работы.",
-  },
+/* ─── What's inside the template ─── */
+const templateFeatures = [
+  "Готовые столбцы: имя, ссылка, подписчики, охват, ER и др.",
+  "Форматирование и валидация данных для корректного парсинга",
+  "Примеры заполнения для быстрого старта",
 ]
 
 /* ─── FAQ ─── */
 const faqItems = [
   {
-    q: "Как подключить Google-таблицу?",
-    a: "Перейдите в Настройки, найдите секцию 'Статус подключений' и нажмите 'Подключить' напротив Google Sheets API. Вам нужно будет создать сервисный аккаунт в Google Cloud Console и предоставить доступ к нужной таблице.",
+    q: "Как скопировать шаблон Google Sheets?",
+    a: 'Нажмите кнопку "Скопировать шаблон" в разделе выше. Google откроет диалог создания копии -- нажмите "Создать копию". Таблица появится на вашем Google Диске.',
   },
   {
-    q: "Что делать, если данные не обновляются?",
-    a: "Проверьте статус подключения на странице Настройки. Если статус показывает 'Подключено', попробуйте нажать 'Обновить'. Убедитесь, что у сервисного аккаунта есть доступ к таблице.",
+    q: "Где взять URL моей таблицы?",
+    a: "Откройте скопированную таблицу в браузере. URL в адресной строке -- это и есть нужная ссылка. Скопируйте весь адрес (он начинается с docs.google.com/spreadsheets).",
   },
   {
-    q: "Как настроить дашборд DataLens?",
-    a: "Создайте дашборд в Yandex DataLens (datalens.yandex.cloud), настройте подключение к вашему источнику данных, затем получите публичную ссылку для встраивания. Добавьте эту ссылку в Настройках платформы.",
+    q: "Можно ли использовать свою таблицу, а не шаблон?",
+    a: "Да, но структура столбцов должна совпадать с шаблоном. Рекомендуем начать с шаблона, чтобы избежать ошибок при парсинге.",
   },
   {
-    q: "Какие ограничения у бесплатного плана?",
-    a: "Бесплатный план включает 1 парсинг в день. Стандартный план снимает ограничения на количество парсингов. Премиум-план добавляет приоритетную очередь и дополнительные возможности.",
+    q: "Данные не подгружаются на странице Парсинг?",
+    a: "Проверьте, что URL таблицы корректно сохранён в Настройках, а доступ к таблице открыт (Файл -> Настройки доступа -> Все, у кого есть ссылка).",
   },
   {
-    q: "Как изменить данные профиля?",
-    a: "Перейдите в раздел Профиль через боковое меню или выпадающее меню пользователя в правом верхнем углу. Там можно обновить личные данные и сменить пароль.",
+    q: "Как часто обновляются данные?",
+    a: "Данные обновляются при каждом запуске парсинга. Частота зависит от вашего тарифного плана: бесплатный -- 1 раз в день, Стандарт и Премиум -- без ограничений.",
   },
 ]
 
@@ -174,11 +108,13 @@ export default function GuidePage() {
     })
   }
 
-  const progress = Math.round((completedSteps.size / quickStartSteps.length) * 100)
+  const progress = Math.round(
+    (completedSteps.size / quickStartSteps.length) * 100
+  )
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-8 pb-12">
-      {/* Hero banner */}
+      {/* ── Hero banner ── */}
       <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-8 lg:p-10 relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/[0.02] pointer-events-none" />
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-primary/5 blur-[80px] pointer-events-none" />
@@ -189,21 +125,70 @@ export default function GuidePage() {
               <Rocket className="w-5 h-5 text-primary" />
             </div>
             <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] tracking-[0.15em] uppercase">
-              Руководство
+              Инструкция
             </Badge>
           </div>
 
           <h2 className="text-2xl lg:text-3xl font-bold uppercase tracking-[0.02em] text-foreground mb-3 text-balance">
-            Добро пожаловать в SMIP
+            Начните работу за 3 шага
           </h2>
           <p className="text-muted-foreground text-sm lg:text-base leading-relaxed max-w-2xl">
-            Это краткое руководство поможет вам быстро разобраться в платформе. Следуйте шагам
-            ниже или изучите описания разделов, чтобы начать работу с аналитикой социальных сетей.
+            Скопируйте готовый шаблон таблицы, подключите его к платформе и
+            запустите парсинг. Весь процесс занимает пару минут.
           </p>
         </div>
       </section>
 
-      {/* Quick start with progress */}
+      {/* ── Template download card ── */}
+      <section className="rounded-2xl border border-primary/20 bg-primary/[0.03] backdrop-blur-sm p-6 lg:p-8 relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-primary/5 blur-[60px] pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center gap-6">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl border border-primary/30 bg-primary/10 flex items-center justify-center">
+                <FileSpreadsheet className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="text-base font-bold uppercase tracking-[0.1em] text-foreground">
+                Шаблон Google Sheets
+              </h3>
+            </div>
+
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              Готовая таблица с правильной структурой данных. Нажмите кнопку --
+              Google создаст копию в вашем аккаунте.
+            </p>
+
+            <ul className="flex flex-col gap-2 mb-5 lg:mb-0">
+              {templateFeatures.map((feature, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-2 text-xs text-muted-foreground/80"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary/60 mt-0.5 flex-shrink-0" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex-shrink-0">
+            <Button
+              size="lg"
+              className="rounded-xl text-sm tracking-[0.05em] uppercase gap-2.5 w-full lg:w-auto"
+              asChild
+            >
+              <a href={TEMPLATE_URL} target="_blank" rel="noopener noreferrer">
+                <Copy className="w-4 h-4" />
+                Скопировать шаблон
+                <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Quick start with progress ── */}
       <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -215,7 +200,9 @@ export default function GuidePage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground font-mono">{progress}%</span>
+            <span className="text-xs text-muted-foreground font-mono">
+              {progress}%
+            </span>
             <div className="w-24 h-1.5 rounded-full bg-secondary overflow-hidden">
               <div
                 className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
@@ -241,7 +228,11 @@ export default function GuidePage() {
                 <button
                   onClick={() => toggleStep(index)}
                   className="flex-shrink-0 mt-0.5"
-                  aria-label={done ? `Отменить шаг ${step.number}` : `Выполнить шаг ${step.number}`}
+                  aria-label={
+                    done
+                      ? `Отменить шаг ${step.number}`
+                      : `Выполнить шаг ${step.number}`
+                  }
                 >
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
@@ -272,13 +263,25 @@ export default function GuidePage() {
                   <p className="text-xs text-muted-foreground leading-relaxed mb-2">
                     {step.description}
                   </p>
-                  <Link
-                    href={step.link.href}
-                    className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors font-medium"
-                  >
-                    {step.link.label}
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
+                  {step.link.external ? (
+                    <a
+                      href={step.link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+                    >
+                      {step.link.label}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <Link
+                      href={step.link.href}
+                      className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+                    >
+                      {step.link.label}
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  )}
                 </div>
               </div>
             )
@@ -286,99 +289,78 @@ export default function GuidePage() {
         </div>
       </section>
 
-      {/* Section descriptions */}
-      <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
-        <h3 className="text-base font-bold uppercase tracking-[0.1em] text-foreground mb-2">
-          Разделы платформы
-        </h3>
-        <p className="text-xs text-muted-foreground mb-6">
-          Подробное описание каждого раздела и его возможностей
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sections.map((section) => (
-            <Link
-              key={section.title}
-              href={section.href}
-              className="group rounded-xl border border-border bg-secondary/20 p-5 transition-all duration-300 hover:border-primary/30 hover:bg-secondary/40"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg border border-primary/20 bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 group-hover:border-primary/40 transition-all duration-300">
-                  <section.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-bold uppercase tracking-[0.05em] text-foreground">
-                    {section.title}
-                  </h4>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-300 flex-shrink-0" />
-              </div>
-
-              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                {section.description}
-              </p>
-
-              <ul className="flex flex-col gap-1.5">
-                {section.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground/80">
-                    <CheckCircle2 className="w-3 h-3 text-primary/50 mt-0.5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Key features overview */}
+      {/* ── How it works ── */}
       <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
         <div className="flex items-center gap-3 mb-6">
-          <Shield className="w-5 h-5 text-primary" />
+          <Zap className="w-5 h-5 text-primary" />
           <h3 className="text-base font-bold uppercase tracking-[0.1em] text-foreground">
-            Ключевые возможности
+            Как это работает
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {keyFeatures.map((feature) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            {
+              icon: FileSpreadsheet,
+              title: "Шаблон",
+              description:
+                "Вы копируете готовую таблицу с нужной структурой. Данные парсинга записываются именно в неё.",
+            },
+            {
+              icon: Link2,
+              title: "Подключение",
+              description:
+                "Платформа считывает URL вашей таблицы и получает доступ к данным через Google Sheets API.",
+            },
+            {
+              icon: Table2,
+              title: "Парсинг",
+              description:
+                "Собранные данные блогеров автоматически заполняют таблицу. Вы видите результат в реальном времени.",
+            },
+          ].map((item) => (
             <div
-              key={feature.title}
-              className="flex items-start gap-4 p-4 rounded-xl border border-border bg-secondary/20"
+              key={item.title}
+              className="flex flex-col items-center text-center p-5 rounded-xl border border-border bg-secondary/20"
             >
-              <div className="w-10 h-10 rounded-lg border border-primary/20 bg-primary/5 flex items-center justify-center flex-shrink-0">
-                <feature.icon className="w-5 h-5 text-primary" />
+              <div className="w-12 h-12 rounded-xl border border-primary/20 bg-primary/5 flex items-center justify-center mb-4">
+                <item.icon className="w-6 h-6 text-primary" />
               </div>
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-[0.05em] text-foreground mb-1">
-                  {feature.title}
-                </h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
+              <h4 className="text-xs font-bold uppercase tracking-[0.05em] text-foreground mb-2">
+                {item.title}
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {item.description}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* ── FAQ ── */}
       <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
         <div className="flex items-center gap-3 mb-6">
           <HelpCircle className="w-5 h-5 text-primary" />
           <h3 className="text-base font-bold uppercase tracking-[0.1em] text-foreground">
-            Часто задаваемые вопросы
+            Частые вопросы
           </h3>
         </div>
 
         <div className="flex flex-col gap-2">
           {faqItems.map((item, index) => (
-            <div key={index} className="rounded-xl border border-border overflow-hidden">
+            <div
+              key={index}
+              className="rounded-xl border border-border overflow-hidden"
+            >
               <button
-                onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                onClick={() =>
+                  setExpandedFaq(expandedFaq === index ? null : index)
+                }
                 className="w-full flex items-center justify-between p-4 text-left hover:bg-secondary/30 transition-colors"
               >
-                <span className="text-sm text-foreground font-medium pr-4">{item.q}</span>
+                <span className="text-sm text-foreground font-medium pr-4">
+                  {item.q}
+                </span>
                 <ChevronDown
                   className={`w-4 h-4 text-muted-foreground transition-transform duration-200 flex-shrink-0 ${
                     expandedFaq === index ? "rotate-180" : ""
@@ -387,11 +369,15 @@ export default function GuidePage() {
               </button>
               <div
                 className={`overflow-hidden transition-all duration-300 ${
-                  expandedFaq === index ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                  expandedFaq === index
+                    ? "max-h-40 opacity-100"
+                    : "max-h-0 opacity-0"
                 }`}
               >
                 <div className="px-4 pb-4">
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.a}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {item.a}
+                  </p>
                 </div>
               </div>
             </div>
@@ -399,13 +385,14 @@ export default function GuidePage() {
         </div>
       </section>
 
-      {/* Footer CTA */}
+      {/* ── Footer CTA ── */}
       <section className="rounded-2xl border border-primary/20 bg-primary/[0.03] backdrop-blur-sm p-6 lg:p-8 text-center">
         <h3 className="text-base font-bold uppercase tracking-[0.1em] text-foreground mb-2">
           Нужна помощь?
         </h3>
         <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto">
-          Если у вас остались вопросы, загляните в настройки или свяжитесь с нашей командой поддержки.
+          Если что-то не получается, проверьте настройки подключения или
+          напишите нам.
         </p>
         <div className="flex items-center justify-center gap-3">
           <Button
