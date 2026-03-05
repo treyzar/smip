@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge"
 
 /* ─── Template URL (replace with real Google Sheets /copy link) ─── */
 const TEMPLATE_URL =
-  "https://docs.google.com/spreadsheets/d/ВАША_ССЫЛКА_НА_ШАБЛОН/copy"
+  "https://docs.google.com/spreadsheets/d/1M55bZqfdQ47Pena4E81ZrvFDQV3j4jdLZ7PTEzvj9QU/copy"
 
 /* ─── localStorage keys ─── */
 const LS_TEMPLATE_COPIED = "smip_template_copied"
@@ -236,19 +236,17 @@ export default function GuidePage() {
           </div>
           <div className="flex items-center gap-3">
             <span
-              className={`text-xs font-mono ${
-                progress === 100
-                  ? "text-primary font-medium"
-                  : "text-muted-foreground"
-              }`}
+              className={`text-xs font-mono ${progress === 100
+                ? "text-primary font-medium"
+                : "text-muted-foreground"
+                }`}
             >
               {doneCount}/{quickStartSteps.length}
             </span>
             <div className="w-28 h-1.5 rounded-full bg-secondary overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all duration-500 ease-out ${
-                  progress === 100 ? "bg-primary" : "bg-primary/70"
-                }`}
+                className={`h-full rounded-full transition-all duration-500 ease-out ${progress === 100 ? "bg-primary" : "bg-primary/70"
+                  }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -264,20 +262,18 @@ export default function GuidePage() {
             return (
               <div
                 key={step.number}
-                className={`flex gap-4 p-4 rounded-xl border transition-all duration-300 ${
-                  done
-                    ? "border-primary/20 bg-primary/[0.03]"
-                    : "border-border bg-secondary/20 hover:bg-secondary/30"
-                }`}
+                className={`flex gap-4 p-4 rounded-xl border transition-all duration-300 ${done
+                  ? "border-primary/20 bg-primary/[0.03]"
+                  : "border-border bg-secondary/20 hover:bg-secondary/30"
+                  }`}
               >
                 {/* Step indicator */}
                 <div className="flex-shrink-0 mt-0.5">
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
-                      done
-                        ? "bg-primary/10 border border-primary/40"
-                        : "bg-secondary border border-border"
-                    }`}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${done
+                      ? "bg-primary/10 border border-primary/40"
+                      : "bg-secondary border border-border"
+                      }`}
                   >
                     {done ? (
                       <CheckCircle2 className="w-4 h-4 text-primary" />
@@ -292,9 +288,8 @@ export default function GuidePage() {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <h4
-                    className={`text-sm font-bold uppercase tracking-[0.05em] mb-1 transition-colors ${
-                      done ? "text-primary" : "text-foreground"
-                    }`}
+                    className={`text-sm font-bold uppercase tracking-[0.05em] mb-1 transition-colors ${done ? "text-primary" : "text-foreground"
+                      }`}
                   >
                     {step.title}
                   </h4>
@@ -401,17 +396,15 @@ export default function GuidePage() {
                   {item.q}
                 </span>
                 <ChevronDown
-                  className={`w-4 h-4 text-muted-foreground transition-transform duration-200 flex-shrink-0 ${
-                    expandedFaq === index ? "rotate-180" : ""
-                  }`}
+                  className={`w-4 h-4 text-muted-foreground transition-transform duration-200 flex-shrink-0 ${expandedFaq === index ? "rotate-180" : ""
+                    }`}
                 />
               </button>
               <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  expandedFaq === index
-                    ? "max-h-40 opacity-100"
-                    : "max-h-0 opacity-0"
-                }`}
+                className={`overflow-hidden transition-all duration-300 ${expandedFaq === index
+                  ? "max-h-40 opacity-100"
+                  : "max-h-0 opacity-0"
+                  }`}
               >
                 <div className="px-4 pb-4">
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -440,9 +433,9 @@ export default function GuidePage() {
             className="rounded-lg text-xs tracking-[0.05em] uppercase border-border bg-transparent text-foreground hover:bg-secondary gap-2"
             asChild
           >
-            <Link href="/dashboard/profile">
+            <Link href="/dashboard/settings">
               <Settings className="w-3.5 h-3.5" />
-              Профиль
+              Настройки
             </Link>
           </Button>
           <Button
