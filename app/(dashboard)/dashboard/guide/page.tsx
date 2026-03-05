@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -23,6 +23,11 @@ import { Badge } from "@/components/ui/badge"
 const TEMPLATE_URL =
   "https://docs.google.com/spreadsheets/d/ВАША_ССЫЛКА_НА_ШАБЛОН/copy"
 
+/* ─── localStorage keys ─── */
+const LS_TEMPLATE_COPIED = "smip_template_copied"
+const LS_SHEET_URL = "smip_google_sheet_url"
+const LS_PARSING_VISITED = "smip_parsing_visited"
+
 /* ─── Quick-start steps ─── */
 const quickStartSteps = [
   {
@@ -38,12 +43,12 @@ const quickStartSteps = [
   },
   {
     number: "02",
-    title: "Вставьте URL таблицы в Настройки",
+    title: "Вставьте URL таблицы в Профиль",
     description:
-      "Откройте вашу копию таблицы, скопируйте URL из адресной строки браузера и вставьте его в разделе Настройки в поле Google Sheets API.",
+      "Откройте вашу копию таблицы, скопируйте URL из адресной строки браузера и вставьте его в разделе Профиль в поле Google Таблица.",
     link: {
-      label: "Перейти в Настройки",
-      href: "/dashboard/settings",
+      label: "Перейти в Профиль",
+      href: "/dashboard/profile",
       external: false,
     },
   },
@@ -83,7 +88,7 @@ const faqItems = [
   },
   {
     q: "Данные не подгружаются на странице Парсинг?",
-    a: "Проверьте, что URL таблицы корректно сохранён в Настройках, а доступ к таблице открыт (Файл -> Настройки доступа -> Все, у кого есть ссылка).",
+    a: "Проверьте, что URL таблицы корректно сохранён в Профиле (раздел Google Таблица), а доступ к таблице открыт (Файл -> Настройки доступа -> Все, у кого есть ссылка).",
   },
   {
     q: "Как часто обновляются данные?",
@@ -94,22 +99,45 @@ const faqItems = [
 /* ─── Component ─── */
 export default function GuidePage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
+  const [completedSteps, setCompletedSteps] = useState<boolean[]>([
+    false,
+    false,
+    false,
+  ])
 
-  const toggleStep = (index: number) => {
-    setCompletedSteps((prev) => {
-      const next = new Set(prev)
-      if (next.has(index)) {
-        next.delete(index)
-      } else {
-        next.add(index)
-      }
-      return next
-    })
+  const checkSteps = useCallback(() => {
+    const templateCopied =
+      localStorage.getItem(LS_TEMPLATE_COPIED) === "true"
+    const sheetUrlSet = Boolean(localStorage.getItem(LS_SHEET_URL)?.trim())
+    const parsingVisited =
+      localStorage.getItem(LS_PARSING_VISITED) === "true"
+    setCompletedSteps([templateCopied, sheetUrlSet, parsingVisited])
+  }, [])
+
+  useEffect(() => {
+    checkSteps()
+
+    const handleStorage = () => checkSteps()
+    window.addEventListener("storage", handleStorage)
+
+    // Re-check on focus (user might have done something in another tab or navigated away)
+    const handleFocus = () => checkSteps()
+    window.addEventListener("focus", handleFocus)
+
+    return () => {
+      window.removeEventListener("storage", handleStorage)
+      window.removeEventListener("focus", handleFocus)
+    }
+  }, [checkSteps])
+
+  const handleTemplateCopy = () => {
+    localStorage.setItem(LS_TEMPLATE_COPIED, "true")
+    window.dispatchEvent(new Event("storage"))
   }
 
+  const doneCount = completedSteps.filter(Boolean).length
   const progress = Math.round(
-    (completedSteps.size / quickStartSteps.length) * 100
+    (doneCount / quickStartSteps.length) * 100
   )
 
   return (
@@ -178,7 +206,12 @@ export default function GuidePage() {
               className="rounded-xl text-sm tracking-[0.05em] uppercase gap-2.5 w-full lg:w-auto"
               asChild
             >
-              <a href={TEMPLATE_URL} target="_blank" rel="noopener noreferrer">
+              <a
+                href={TEMPLATE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleTemplateCopy}
+              >
                 <Copy className="w-4 h-4" />
                 Скопировать шаблон
                 <ExternalLink className="w-3.5 h-3.5 opacity-60" />
@@ -196,25 +229,38 @@ export default function GuidePage() {
               Быстрый старт
             </h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Отмечайте шаги по мере выполнения
+              {progress === 100
+                ? "Все шаги выполнены!"
+                : "Прогресс обновляется автоматически"}
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground font-mono">
-              {progress}%
+            <span
+              className={`text-xs font-mono ${
+                progress === 100
+                  ? "text-primary font-medium"
+                  : "text-muted-foreground"
+              }`}
+            >
+              {doneCount}/{quickStartSteps.length}
             </span>
-            <div className="w-24 h-1.5 rounded-full bg-secondary overflow-hidden">
+            <div className="w-28 h-1.5 rounded-full bg-secondary overflow-hidden">
               <div
-                className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+                className={`h-full rounded-full transition-all duration-500 ease-out ${
+                  progress === 100 ? "bg-primary" : "bg-primary/70"
+                }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
+            {progress === 100 && (
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+            )}
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
           {quickStartSteps.map((step, index) => {
-            const done = completedSteps.has(index)
+            const done = completedSteps[index]
             return (
               <div
                 key={step.number}
@@ -224,21 +270,13 @@ export default function GuidePage() {
                     : "border-border bg-secondary/20 hover:bg-secondary/30"
                 }`}
               >
-                {/* Step toggle */}
-                <button
-                  onClick={() => toggleStep(index)}
-                  className="flex-shrink-0 mt-0.5"
-                  aria-label={
-                    done
-                      ? `Отменить шаг ${step.number}`
-                      : `Выполнить шаг ${step.number}`
-                  }
-                >
+                {/* Step indicator */}
+                <div className="flex-shrink-0 mt-0.5">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                       done
                         ? "bg-primary/10 border border-primary/40"
-                        : "bg-secondary border border-border hover:border-primary/30"
+                        : "bg-secondary border border-border"
                     }`}
                   >
                     {done ? (
@@ -249,7 +287,7 @@ export default function GuidePage() {
                       </span>
                     )}
                   </div>
-                </button>
+                </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
@@ -268,6 +306,7 @@ export default function GuidePage() {
                       href={step.link.href}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={handleTemplateCopy}
                       className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors font-medium"
                     >
                       {step.link.label}
@@ -401,9 +440,9 @@ export default function GuidePage() {
             className="rounded-lg text-xs tracking-[0.05em] uppercase border-border bg-transparent text-foreground hover:bg-secondary gap-2"
             asChild
           >
-            <Link href="/dashboard/settings">
+            <Link href="/dashboard/profile">
               <Settings className="w-3.5 h-3.5" />
-              Настройки
+              Профиль
             </Link>
           </Button>
           <Button
