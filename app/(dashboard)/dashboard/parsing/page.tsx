@@ -38,6 +38,14 @@ export default function ParsingPage() {
     return () => window.removeEventListener("storage", handleStorage)
   }, [loadUrl])
 
+  // Mark parsing as visited when a valid sheet URL is loaded
+  useEffect(() => {
+    if (sheetUrl) {
+      localStorage.setItem("smip_parsing_visited", "true")
+      window.dispatchEvent(new Event("storage"))
+    }
+  }, [sheetUrl])
+
   const embedUrl = sheetUrl ? convertToEmbedUrl(sheetUrl) : ""
 
   return (
