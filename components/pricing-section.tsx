@@ -161,7 +161,7 @@ export function PricingSection() {
                         : "/ мес"}
                   </span>
                 </div>
-                <p className="text-muted-foreground text-sm">{plan.description}</p>
+                <p className="text-foreground/70 text-sm">{plan.description}</p>
               </div>
 
               <div className="border-t border-border pt-6 mb-8 flex-1">
@@ -169,7 +169,7 @@ export function PricingSection() {
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-3">
                       <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-foreground/80">{f}</span>
+                      <span className="text-base text-foreground/85">{f}</span>
                     </li>
                   ))}
                 </ul>

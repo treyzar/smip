@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react"
 
 const stats = [
-  { value: "99.9", suffix: "%", label: "UPTIME ПЛАТФОРМЫ" },
-  { value: "2M", suffix: "+", label: "ПОСТОВ В ДЕНЬ" },
-  { value: "500K", suffix: "", label: "АКТИВНЫХ ПОЛЬЗОВАТЕЛЕЙ" },
-  { value: "<50", suffix: "ms", label: "ЛАТЕНТНОСТЬ API" },
+  { value: "8.7M", suffix: "", label: "ПРОСМОТРОВ ОТСЛЕЖЕНО" },
+  { value: "94", suffix: "+", label: "АКТИВНЫХ БЛОГЕРОВ" },
+  { value: "347", suffix: "%", label: "СРЕДНИЙ ROI КАМПАНИЙ" },
+  { value: "12", suffix: "ч", label: "ЭКОНОМИИ В НЕДЕЛЮ" },
 ]
 
 function AnimatedStat({
@@ -83,10 +83,12 @@ export function StatsSection() {
             {/* Section header */}
             <div className="p-8 lg:p-16 pb-0 lg:pb-0">
               <span className="text-primary text-xs tracking-[0.2em] uppercase mb-4 block font-medium">
-                Метрики
+                Преимущества
               </span>
-              <h2 className="text-4xl lg:text-6xl font-bold uppercase tracking-[-0.02em] text-foreground">
-                МАСШТАБ ПЛАТФОРМЫ
+              <h2 className="text-4xl lg:text-6xl font-bold uppercase tracking-[-0.02em] text-foreground text-balance">
+                ПОЧЕМУ КОМПАНИИ
+                <br />
+                <span className="text-foreground/40">ВЫБИРАЮТ SMIP</span>
               </h2>
             </div>
 

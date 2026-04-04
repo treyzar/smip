@@ -4,40 +4,39 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Futuristic AI theme - deep navy-charcoal with mint accent */
-  --background: #1a1f2e;
-  --foreground: #e8eaed;
-  --card: #232937;
-  --card-foreground: #e8eaed;
-  --popover: #232937;
-  --popover-foreground: #e8eaed;
-  --primary: #00d9a5;
-  --primary-foreground: #1a1f2e;
-  --secondary: #2a3142;
-  --secondary-foreground: #e8eaed;
-  --muted: #2a3142;
-  --muted-foreground: #9aa0a6;
-  --accent: #00d9a5;
-  --accent-foreground: #1a1f2e;
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: rgba(255, 255, 255, 0.1);
-  --input: #2a3142;
-  --ring: #00d9a5;
-  --chart-1: #00d9a5;
+  --background: #171e28;
+  --foreground: #f7f9fc;
+  --card: #1f2940;
+  --card-foreground: #f7f9fc;
+  --popover: #1f2940;
+  --popover-foreground: #f7f9fc;
+  --primary: #00e5b0;
+  --primary-foreground: #0f1419;
+  --secondary: #2c3650;
+  --secondary-foreground: #f7f9fc;
+  --muted: #2c3650;
+  --muted-foreground: #d5dbe6;
+  --accent: #00e5b0;
+  --accent-foreground: #0f1419;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #0f1419;
+  --border: rgba(255, 255, 255, 0.22);
+  --input: #2c3650;
+  --ring: #00e5b0;
+  --chart-1: #00e5b0;
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 1rem;
-  --sidebar: #171b28;
-  --sidebar-foreground: #e8eaed;
-  --sidebar-primary: #00d9a5;
-  --sidebar-primary-foreground: #1a1f2e;
-  --sidebar-accent: #2a3142;
-  --sidebar-accent-foreground: #e8eaed;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #00d9a5;
+  --sidebar: #131924;
+  --sidebar-foreground: #f5f7fa;
+  --sidebar-primary: #00e5b0;
+  --sidebar-primary-foreground: #0f1419;
+  --sidebar-accent: #283248;
+  --sidebar-accent-foreground: #f5f7fa;
+  --sidebar-border: rgba(255, 255, 255, 0.18);
+  --sidebar-ring: #00e5b0;
 }
 
 .dark {
@@ -77,7 +76,7 @@
 
 @theme inline {
   --font-sans: "Inter", "Inter Fallback", system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --font-mono: "IBM Plex Mono", "Courier New", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -122,6 +121,26 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* IMPROVED: Better base font size for readability */
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  /* ACCESSIBILITY: Focus states for all interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  
+  /* IMPROVED: Better heading contrast and hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--foreground);
+    font-weight: 700;
   }
 }
 
@@ -140,56 +159,48 @@
   background: var(--primary);
 }
 
-/* Marquee animation */
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.animate-marquee {
-  animation: marquee 30s linear infinite;
-}
-
 /* Glow pulse animation */
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.4; filter: blur(60px); }
-  50% { opacity: 0.7; filter: blur(80px); }
+  0%, 100% { opacity: 0.4; filter: blur(80px); }
+  50% { opacity: 0.7; filter: blur(100px); }
 }
 .animate-glow-pulse {
-  animation: glow-pulse 6s ease-in-out infinite;
+  animation: glow-pulse 5s ease-in-out infinite;
 }
 
 /* Fade in on scroll */
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in-up {
-  animation: fade-in-up 0.8s ease-out forwards;
-}
-
-/* Line draw animation */
-@keyframes line-draw {
-  from { width: 0; }
-  to { width: 100%; }
-}
-.animate-line-draw {
-  animation: line-draw 1.5s ease-out forwards;
-}
-
-/* Counter animation */
-@keyframes count-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Stagger children */
-.stagger-children > * {
-  opacity: 0;
   animation: fade-in-up 0.6s ease-out forwards;
 }
-.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Floating social icons */
+@keyframes float-social {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-16px) translateX(8px) rotate(3deg); }
+  50% { transform: translateY(-8px) translateX(-4px) rotate(-2deg); }
+  75% { transform: translateY(-24px) translateX(4px) rotate(1deg); }
+}
+.animate-float-social {
+  animation: float-social 30s ease-in-out infinite;
+}
+
+/* Smooth transitions globally */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* MOBILE OPTIMIZATIONS */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  h1 { font-size: 2rem; line-height: 1.15; }
+  h2 { font-size: 1.75rem; line-height: 1.2; }
+}

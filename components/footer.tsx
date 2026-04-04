@@ -2,42 +2,48 @@ import Link from "next/link"
 
 const footerLinks = {
   Продукт: [
-    { label: "Преимущества", href: "#features" },
-    { label: "Тарифы", href: "#pricing" },
+    { label: "Почему SMIP", href: "#features" },
     { label: "Как это работает", href: "#process" },
+    { label: "Результаты", href: "#benefits" },
   ],
   Поддержка: [
-    { label: "Документация", href: "#" },
-    { label: "API", href: "#" },
-    { label: "Контакты", href: "#cta" },
+    { label: "FAQ", href: "#faq" },
+    { label: "Демо", href: "#cta" },
+    { label: "Live-дашборд", href: "#demo" },
   ],
   Компания: [
-    { label: "О нас", href: "#" },
-    { label: "Блог", href: "#" },
+    { label: "Написать на hello@smip.panel", href: "mailto:hello@smip.panel" },
+    { label: "@smip_support", href: "https://t.me/smip_support" },
   ],
 }
 
 export function Footer() {
   return (
-    <footer className="px-6 py-16 lg:px-8 lg:py-20">
-      <div className="mx-auto max-w-7xl">
-        <div className="border-t border-border pt-16">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
+    <footer className="px-6 py-14 lg:px-8 lg:py-18 relative">
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-primary/4 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="mx-auto max-w-7xl relative z-10">
+        <div className="border-t border-border/40 pt-14">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-8 mb-14">
             <div className="lg:col-span-2">
-              <Link href="/" className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full border border-primary/40 flex items-center justify-center">
-                  <span className="text-primary font-bold text-sm">S</span>
+              <Link href="/" className="flex items-center gap-2.5 mb-5 group">
+                <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center shadow-md shadow-primary/25">
+                  <span className="text-primary-foreground font-bold text-sm">S</span>
                 </div>
-                <span className="font-bold text-sm tracking-[0.2em] uppercase text-foreground">
+                <span className="font-bold text-sm tracking-[0.2em] uppercase text-foreground/90 group-hover:text-primary transition-colors duration-300">
                   SMIP
                 </span>
               </Link>
-              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mb-8">
-                Платформа нового поколения для глубокой аналитики блогеров и автоматизации социальных сетей с AI.
+              <p className="text-foreground/65 text-sm leading-relaxed max-w-xs mb-6">
+                Платформа для команд, которым нужно быстрее считать эффективность блогеров, видеть ROMI и
+                перестать собирать отчеты вручную.
               </p>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                <span className="text-xs text-muted-foreground tracking-[0.1em] uppercase">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/8 border border-emerald-500/15 w-fit">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
+                </span>
+                <span className="text-[10px] text-emerald-400 tracking-[0.1em] uppercase font-medium">
                   Все системы работают
                 </span>
               </div>
@@ -45,15 +51,15 @@ export function Footer() {
 
             {Object.entries(footerLinks).map(([category, links]) => (
               <div key={category}>
-                <h4 className="text-xs font-bold tracking-[0.2em] uppercase text-foreground mb-6">
+                <h4 className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/70 mb-5">
                   {category}
                 </h4>
-                <ul className="flex flex-col gap-3">
-                  {links.map((link) => (
+                <ul className="flex flex-col gap-2.5">
+                  {links.map(link => (
                     <li key={link.label}>
                       <a
                         href={link.href}
-                        className="text-muted-foreground text-sm hover:text-primary transition-colors duration-300"
+                        className="text-foreground/60 text-sm hover:text-primary transition-colors duration-300"
                       >
                         {link.label}
                       </a>
@@ -64,16 +70,16 @@ export function Footer() {
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-border/50">
-            <p className="text-muted-foreground/60 text-xs tracking-[0.1em]">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-border/30">
+            <p className="text-foreground/40 text-xs tracking-[0.08em]">
               2026 SMIP. Все права защищены.
             </p>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-muted-foreground/60 text-xs hover:text-primary transition-colors duration-300">
-                Политика конфиденциальности
+            <div className="flex items-center gap-5">
+              <a href="mailto:hello@smip.panel" className="text-foreground/40 text-xs hover:text-primary transition-colors duration-300">
+                hello@smip.panel
               </a>
-              <a href="#" className="text-muted-foreground/60 text-xs hover:text-primary transition-colors duration-300">
-                Условия использования
+              <a href="#cta" className="text-foreground/40 text-xs hover:text-primary transition-colors duration-300">
+                Запросить демо
               </a>
             </div>
           </div>
