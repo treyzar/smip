@@ -1,7 +1,6 @@
 "use client"
 
 import { motion } from "framer-motion"
-import Image from "next/image"
 
 export function DashboardDemoFrame() {
   return (
@@ -16,10 +15,10 @@ export function DashboardDemoFrame() {
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-300/80" />
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
                 </div>
-                <span className="ml-2 text-xs font-medium text-foreground/62">real product screen</span>
+                <span className="ml-2 text-xs font-medium text-foreground/62">реальный экран продукта</span>
               </div>
               <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary">
-                how it looks
+                как это выглядит
               </span>
             </div>
 
@@ -30,15 +29,11 @@ export function DashboardDemoFrame() {
                 transition={{ duration: 0.45 }}
                 className="overflow-hidden rounded-xl border border-border/60 bg-white"
               >
-                <Image
-                  src="/dashboard-real-preview.png"
-                  alt="Реальный экран аналитики SMIP по блогеру"
-                  width={1024}
-                  height={685}
-                  className="h-auto w-full object-cover"
-                  quality={100}
-                  unoptimized
-                  priority
+                <iframe
+                  src="https://datalens.yandex/5avoe93hcj2ip?_no_controls=1"
+                  className="w-full h-[685px]"
+                  frameBorder="0"
+                  title="Реальный экран аналитики SMIP по блогеру"
                 />
               </motion.div>
 

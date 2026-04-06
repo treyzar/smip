@@ -8,8 +8,8 @@ import {
   Table2,
   BarChart3,
   Settings,
-  Bell,
   ChevronLeft,
+  ChevronRight,
   Menu,
   LogOut,
   User,
@@ -127,7 +127,7 @@ export default function DashboardLayout({
               className="w-full flex items-center justify-center py-2 text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors"
               aria-label="Развернуть меню"
             >
-              <Menu className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -204,14 +204,6 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              className="relative w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              aria-label="Уведомления"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
-            </button>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-lg hover:bg-secondary transition-colors">

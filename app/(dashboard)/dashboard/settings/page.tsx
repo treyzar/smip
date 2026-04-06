@@ -1,22 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Save, RefreshCw, CheckCircle2, XCircle, HelpCircle, ChevronRight } from "lucide-react"
-
-const connections = [
-  {
-    name: "Google Sheets API",
-    description: "Подключение к парсинг-таблице",
-    connected: true,
-  },
-  {
-    name: "Yandex DataLens",
-    description: "Визуализация аналитики",
-    connected: false,
-  }
-]
 
 const faqItems = [
   {
@@ -36,6 +23,34 @@ const faqItems = [
 export default function SettingsPage() {
   const [email, setEmail] = useState("user@example.com")
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const [googleSheetsConnected, setGoogleSheetsConnected] = useState(false)
+
+  useEffect(() => {
+    const checkConnection = () => {
+      const sheetUrl = localStorage.getItem("smip_google_sheet_url")
+      setGoogleSheetsConnected(Boolean(sheetUrl?.trim()))
+    }
+    
+    checkConnection()
+    
+    const handleStorage = () => checkConnection()
+    window.addEventListener("storage", handleStorage)
+    
+    return () => window.removeEventListener("storage", handleStorage)
+  }, [])
+
+  const connections = [
+    {
+      name: "Google Sheets API",
+      description: "Подключение к парсинг-таблице",
+      connected: googleSheetsConnected,
+    },
+    {
+      name: "Yandex DataLens",
+      description: "Визуализация аналитики",
+      connected: false,
+    }
+  ]
 
   return (
     <div className="max-w-3xl mx-auto flex flex-col gap-8">

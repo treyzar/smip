@@ -240,7 +240,7 @@ export function HeroSection() {
               onClick={scrollToGame}
               className="group max-w-[220px] rounded-2xl border border-primary/25 bg-background/92 p-3 text-right shadow-xl shadow-black/20 backdrop-blur-md transition-transform duration-300 hover:-translate-y-1"
             >
-              <p className="text-xs font-semibold text-foreground">Catch the cat game</p>
+              <p className="text-xs font-semibold text-foreground">Поймай кота</p>
               <p className="mt-1 text-[11px] leading-relaxed text-foreground/60">
                 Нажми на кота и перейди к игре с косточками.
               </p>
@@ -262,7 +262,7 @@ export function HeroSection() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/65 via-transparent to-transparent" />
               <div className="absolute bottom-2 left-0 right-0 text-center text-[10px] font-medium tracking-[0.12em] text-primary uppercase">
-                Play
+                Кот хочет с вами поиграть
               </div>
             </button>
           </motion.div>
