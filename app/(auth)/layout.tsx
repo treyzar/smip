@@ -24,13 +24,14 @@ export default function AuthLayout({
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
 
         <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full border border-primary/60 flex items-center justify-center">
-              <span className="text-primary font-bold text-sm">S</span>
-            </div>
-            <span className="font-bold text-sm tracking-[0.2em] uppercase text-foreground">
-              SMIP
-            </span>
+          <Link href="/" className="flex items-center gap-3 group relative">
+            <div className="absolute -inset-2 bg-primary/15 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <img 
+              src="/logo.svg" 
+              alt="SMIP Logo" 
+              className="h-12 w-auto relative z-10"
+              style={{ imageRendering: 'crisp-edges' }}
+            />
           </Link>
         </div>
 

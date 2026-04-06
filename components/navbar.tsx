@@ -44,13 +44,14 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex items-center justify-between h-18 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center shadow-md shadow-primary/25 group-hover:shadow-lg group-hover:shadow-primary/35 transition-all duration-300">
-              <span className="text-primary-foreground font-bold text-sm">S</span>
-            </div>
-            <span className="font-bold text-sm tracking-[0.2em] uppercase text-foreground/90 group-hover:text-primary transition-colors duration-300">
-              SMIP
-            </span>
+          <Link href="/" className="flex items-center gap-2.5 group relative">
+            <div className="absolute -inset-2 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <img 
+              src="/logo.svg" 
+              alt="SMIP Logo" 
+              className="h-12 w-auto relative z-10 transition-transform duration-300 group-hover:scale-105"
+              style={{ imageRendering: 'crisp-edges' }}
+            />
           </Link>
 
           {/* Desktop Nav */}

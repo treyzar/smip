@@ -70,20 +70,25 @@ export default function DashboardLayout({
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
           {!collapsed && (
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full border border-sidebar-primary/60 flex items-center justify-center flex-shrink-0">
-                <span className="text-sidebar-primary font-bold text-xs">S</span>
-              </div>
-              <span className="font-bold text-xs tracking-[0.2em] uppercase text-sidebar-foreground">
-                SMIP
-              </span>
+            <Link href="/" className="flex items-center gap-3 group relative">
+              <div className="absolute -inset-2 bg-primary/15 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <img 
+                src="/logo.svg" 
+                alt="SMIP Logo" 
+                className="h-10 w-auto relative z-10"
+                style={{ imageRendering: 'crisp-edges' }}
+              />
             </Link>
           )}
           {collapsed && (
-            <Link href="/" className="mx-auto">
-              <div className="w-8 h-8 rounded-full border border-sidebar-primary/60 flex items-center justify-center">
-                <span className="text-sidebar-primary font-bold text-xs">S</span>
-              </div>
+            <Link href="/" className="mx-auto group relative block">
+              <div className="absolute -inset-2 bg-primary/15 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <img 
+                src="/logo.svg" 
+                alt="SMIP Logo" 
+                className="h-10 w-auto relative z-10"
+                style={{ imageRendering: 'crisp-edges' }}
+              />
             </Link>
           )}
           <button
@@ -146,13 +151,14 @@ export default function DashboardLayout({
           />
           <aside className="absolute left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border p-4 flex flex-col">
             <div className="flex items-center justify-between mb-6">
-              <Link href="/" className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full border border-sidebar-primary/60 flex items-center justify-center">
-                  <span className="text-sidebar-primary font-bold text-xs">S</span>
-                </div>
-                <span className="font-bold text-xs tracking-[0.2em] uppercase text-sidebar-foreground">
-                  SMIP
-                </span>
+              <Link href="/" className="flex items-center gap-3 group relative">
+                <div className="absolute -inset-2 bg-primary/15 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <img 
+                  src="/logo.svg" 
+                  alt="SMIP Logo" 
+                  className="h-10 w-auto relative z-10"
+                  style={{ imageRendering: 'crisp-edges' }}
+                />
               </Link>
               <button
                 onClick={() => setMobileOpen(false)}

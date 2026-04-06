@@ -61,7 +61,7 @@ export function CtaSection() {
                 className="rounded-full px-10 h-14 text-base font-semibold tracking-wide group bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/35 hover:scale-[1.02] active:scale-[0.98]"
                 asChild
               >
-                <a href="mailto:hello@smip.panel?subject=Хочу%20персональное%20демо%20SMIP">
+                <a href="https://t.me/smip_support">
                   Запросить персональное демо
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </a>

@@ -78,7 +78,7 @@ export function Footer() {
               <a href="mailto:hello@smip.panel" className="text-foreground/40 text-xs hover:text-primary transition-colors duration-300">
                 hello@smip.panel
               </a>
-              <a href="#cta" className="text-foreground/40 text-xs hover:text-primary transition-colors duration-300">
+              <a href="https://t.me/smip_support" className="text-foreground/40 text-xs hover:text-primary transition-colors duration-300">
                 Запросить демо
               </a>
             </div>

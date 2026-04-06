@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   description:
     "AI-powered social media automation and intelligence platform. Automated publishing, AI analytics, audience insights for 2026.",
   generator: "v0.app",
+  icons: {
+    icon: "/logo.svg",
+  },
 }
 
 export const viewport: Viewport = {
