@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, User, LogOut } from "lucide-react"
+import { Menu, X, User, LogOut, Settings } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,7 +87,10 @@ export function Navbar() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-44 bg-card border-border text-foreground">
                         <DropdownMenuItem asChild className="text-xs">
-                          <Link href="/dashboard/settings"><User className="w-3.5 h-3.5 mr-2" />Настройки</Link>
+                          <Link href="/dashboard/profile"><User className="w-3.5 h-3.5 mr-2" />Профиль</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild className="text-xs">
+                          <Link href="/dashboard/settings"><Settings className="w-3.5 h-3.5 mr-2" />Настройки</Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-border/50" />
                         <DropdownMenuItem onClick={handleLogout} className="text-xs text-destructive cursor-pointer">

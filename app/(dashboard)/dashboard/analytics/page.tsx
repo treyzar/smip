@@ -1,11 +1,39 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { ExternalLink, Maximize2, Minimize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+function normalizeDataLensUrl(url: string): string {
+  if (!url) return ""
+  try {
+    const parsed = new URL(url)
+    if (!parsed.searchParams.has("_no_controls")) {
+      parsed.searchParams.set("_no_controls", "1")
+    }
+    return parsed.toString()
+  } catch {
+    return url
+  }
+}
+
 export default function AnalyticsPage() {
   const [fullscreen, setFullscreen] = useState(false)
+  const [datalensUrl, setDatalensUrl] = useState("")
+
+  const loadUrl = useCallback(() => {
+    const stored = localStorage.getItem("smip_datalens_url")
+    setDatalensUrl(stored || "")
+  }, [])
+
+  useEffect(() => {
+    loadUrl()
+    const handleStorage = () => loadUrl()
+    window.addEventListener("storage", handleStorage)
+    return () => window.removeEventListener("storage", handleStorage)
+  }, [loadUrl])
+
+  const embedUrl = normalizeDataLensUrl(datalensUrl)
 
   return (
     <div className={`flex flex-col ${fullscreen ? "fixed inset-0 z-50 bg-background p-4" : "h-[calc(100vh-7rem)]"}`}>
@@ -25,7 +53,7 @@ export default function AnalyticsPage() {
             size="sm"
             className="text-xs tracking-[0.05em] uppercase border-border bg-transparent text-foreground hover:bg-secondary rounded-lg gap-2"
             onClick={() =>
-              window.open("https://datalens.yandex.cloud", "_blank")
+              window.open(embedUrl || "https://datalens.yandex.cloud", "_blank")
             }
           >
             <ExternalLink className="w-3.5 h-3.5" />
@@ -45,44 +73,45 @@ export default function AnalyticsPage() {
 
       {/* DataLens iframe container */}
       <div className="flex-1 rounded-2xl border border-border bg-card/30 backdrop-blur-sm overflow-hidden relative">
-        {/* Placeholder */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-          <div className="w-16 h-16 rounded-2xl border border-primary/20 bg-primary/5 flex items-center justify-center mb-6">
-            <svg
-              className="w-8 h-8 text-primary"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
+        {!embedUrl ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+            <div className="w-16 h-16 rounded-2xl border border-primary/20 bg-primary/5 flex items-center justify-center mb-6">
+              <svg
+                className="w-8 h-8 text-primary"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <rect x="3" y="12" width="4" height="9" rx="1" />
+                <rect x="10" y="6" width="4" height="15" rx="1" />
+                <rect x="17" y="3" width="4" height="18" rx="1" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold uppercase tracking-[0.05em] text-foreground mb-2">
+              YANDEX DATALENS
+            </h3>
+            <p className="text-muted-foreground text-sm max-w-sm leading-relaxed mb-6">
+              Подключите ваш дашборд DataLens в профиле.
+              Визуализация будет встроена с полной интерактивностью и адаптивным масштабированием.
+            </p>
+            <Button
+              size="sm"
+              className="rounded-lg text-xs tracking-[0.05em] uppercase"
+              asChild
             >
-              <rect x="3" y="12" width="4" height="9" rx="1" />
-              <rect x="10" y="6" width="4" height="15" rx="1" />
-              <rect x="17" y="3" width="4" height="18" rx="1" />
-            </svg>
+              <a href="/dashboard/profile">Настроить подключение</a>
+            </Button>
           </div>
-          <h3 className="text-lg font-bold uppercase tracking-[0.05em] text-foreground mb-2">
-            YANDEX DATALENS
-          </h3>
-          <p className="text-muted-foreground text-sm max-w-sm leading-relaxed mb-6">
-            Подключите ваш дашборд DataLens в настройках.
-            Визуализация будет встроена с полной интерактивностью и адаптивным масштабированием.
-          </p>
-          <Button
-            size="sm"
-            className="rounded-lg text-xs tracking-[0.05em] uppercase"
-            asChild
-          >
-            <a href="/dashboard/settings">Настроить подключение</a>
-          </Button>
-        </div>
-
-        {/* Uncomment and set src to embed a real DataLens dashboard:
-        <iframe
-          src="YOUR_DATALENS_EMBED_URL"
-          className="w-full h-full border-0"
-          title="DataLens дашборд"
-          loading="lazy"
-        /> */}
+        ) : (
+          <iframe
+            src={embedUrl}
+            className="w-full h-full border-0"
+            title="DataLens дашборд"
+            loading="lazy"
+            allowFullScreen
+          />
+        )}
       </div>
     </div>
   )

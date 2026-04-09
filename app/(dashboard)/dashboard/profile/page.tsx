@@ -32,6 +32,7 @@ export default function ProfilePage() {
   const [savedProfile, setSavedProfile] = useState(false)
   const [savedPassword, setSavedPassword] = useState(false)
   const [sheetUrl, setSheetUrl] = useState("")
+  const [datalensUrl, setDatalensUrl] = useState("")
   const [isSavingProfile, setIsSavingProfile] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -48,6 +49,18 @@ export default function ProfilePage() {
       } else {
         const stored = localStorage.getItem("smip_google_sheet_url")
         if (stored) setSheetUrl(stored)
+      }
+
+      const datalensFromUser =
+        "datalens_url" in user && typeof user.datalens_url === "string" ? user.datalens_url : ""
+
+      if (datalensFromUser) {
+        setDatalensUrl(datalensFromUser)
+        localStorage.setItem("smip_datalens_url", datalensFromUser)
+        window.dispatchEvent(new Event("storage"))
+      } else {
+        const stored = localStorage.getItem("smip_datalens_url")
+        if (stored) setDatalensUrl(stored)
       }
     }
   }, [user])
@@ -70,6 +83,7 @@ export default function ProfilePage() {
       await updateUser({ google_sheet_url: sheetUrl })
 
       localStorage.setItem("smip_google_sheet_url", sheetUrl)
+      localStorage.setItem("smip_datalens_url", datalensUrl)
       window.dispatchEvent(new Event("storage"))
 
       setSavedProfile(true)
@@ -194,6 +208,36 @@ export default function ProfilePage() {
             {sheetUrl && (
               <p className="text-xs text-muted-foreground">
                 Таблица будет встроена на странице &laquo;Парсинг&raquo;
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* DataLens URL */}
+        <section className="rounded-2xl border border-border bg-card/30 backdrop-blur-sm p-6 lg:p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Link2 className="w-5 h-5 text-primary" />
+            <h2 className="text-base font-bold uppercase tracking-[0.1em] text-foreground">
+              Yandex DataLens
+            </h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            Вставьте публичный URL вашего дашборда DataLens. Он будет отображаться на странице аналитики.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Label htmlFor="datalens-url" className="text-xs uppercase tracking-[0.1em] text-muted-foreground">
+              URL дашборда
+            </Label>
+            <Input
+              id="datalens-url"
+              value={datalensUrl}
+              onChange={(e) => setDatalensUrl(e.target.value)}
+              placeholder="https://datalens.yandex.cloud/..."
+              className="w-full bg-secondary/30 border-border text-foreground placeholder:text-muted-foreground"
+            />
+            {datalensUrl && (
+              <p className="text-xs text-muted-foreground">
+                Дашборд будет встроен на странице &laquo;Дашборд&raquo;
               </p>
             )}
           </div>
