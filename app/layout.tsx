@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     "AI-powered social media automation and intelligence platform. Automated publishing, AI analytics, audience insights for 2026.",
   generator: "v0.app",
   verification: {
+    google: "iZZqm-ETTVH3gc80s9d7re3aHiwcQMxVdkC17e2On78",
     yandex: "4b9e2b8482f59733",
   },
   icons: {
